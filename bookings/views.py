@@ -4,10 +4,11 @@ from rest_framework import viewsets
 
 from bookings.models import BookingBusModel
 from bookings.seriliazers import BusSerializer
+from rest_framework.pagination import PageNumberPagination
 # Create your views here.
 class BusViewSets(viewsets.ModelViewSet):
     serializer_class = BusSerializer
-    
+    pagination_class = PageNumberPagination
     def get_queryset(self):
         queryset= BookingBusModel.objects.all()
         from_location = self.request.query_params.get('from_location')
