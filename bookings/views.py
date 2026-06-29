@@ -2,13 +2,15 @@ from django.shortcuts import render
 from rest_framework import views
 from rest_framework import viewsets
 
-from bookings.models import BookingBusModel
+from bookings.models import Booking, BookingBusModel, Trip
+from bookings.serializers import BookingSerializer, TripSerializer
 from bookings.seriliazers import BusSerializer
 from rest_framework.pagination import PageNumberPagination
 # Create your views here.
 class BusViewSets(viewsets.ModelViewSet):
     serializer_class = BusSerializer
-    pagination_class = PageNumberPagination
+    # why need to add pagination class??
+    pagination_class = PageNumberPagination 
     def get_queryset(self):
         queryset= BookingBusModel.objects.all()
         from_location = self.request.query_params.get('from_location')
@@ -28,3 +30,16 @@ class BusViewSets(viewsets.ModelViewSet):
         if departure_time:
             queryset = queryset.filter(departure_time=departure_time)    
         return queryset    
+    
+class BookingViewSets(viewsets.ModelViewSet):    
+    serializer_class = BookingSerializer
+    def get_queryset(self):
+        queryset = Booking.objects.all()
+        trip_id = self.request.query_params.get('trip_id')
+        if trip_id:
+            queryset = queryset.filter(trip = trip_id)
+        return queryset    
+    
+class TripViewSets(viewsets.ModelViewSet):
+    queryset = Trip.objects.all()
+    serializer_class = TripSerializer    
