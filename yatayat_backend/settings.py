@@ -58,6 +58,8 @@ REST_FRAMEWORK = {
     )
 }
 MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -147,7 +149,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 CORS_ALLOW_ALL_ORIGINS = True
-ALLOWED_HOSTS = ['yatayat-hub-backend-3.onrender.com','yatayat-hub-backend-4.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['yatayat-hub-backend-3.onrender.com','https://saheel-yatayat-hub.netlify.app/','yatayat-hub-backend-4.onrender.com', 'localhost', '127.0.0.1']
