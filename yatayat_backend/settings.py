@@ -132,3 +132,4 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 CORS_ALLOW_ALL_ORIGINS = True
+ALLOWED_HOSTS = ['yatayat-hub-backend-2.onrender.com', 'localhost', '127.0.0.1']
