@@ -150,4 +150,4 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 CORS_ALLOW_ALL_ORIGINS = True
-ALLOWED_HOSTS = ['yatayat-hub-backend-3.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['yatayat-hub-backend-3.onrender.com','yatayat-hub-backend-4.onrender.com', 'localhost', '127.0.0.1']
