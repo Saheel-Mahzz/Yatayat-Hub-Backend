@@ -4,11 +4,9 @@ from django.contrib.auth.models import User
 class BookingBusModel(models.Model):
     name = models.CharField(max_length=50)
     total_seats = models.IntegerField(default=40)
-    number_plate = models.IntegerField()
+    number_plate = models.CharField(max_length=200)
     bus_type = models.CharField(max_length=50)
-    from_location = models.CharField(max_length=200)
-    to_location = models.CharField(max_length=200)
-    departure_time = models.DateField()
+
     available_seats = models.IntegerField(default=40)
     
     def __str__(self):
@@ -16,8 +14,11 @@ class BookingBusModel(models.Model):
     
     
 class Trip(models.Model):
-    route = models.CharField(max_length=200)
-    bus= models.ForeignKey(BookingBusModel,on_delete=models.CASCADE)
+    from_location = models.CharField(max_length=200)
+    to_location = models.CharField(max_length=200)
+    departure_time = models.DateField()
+    
+    bus = models.ForeignKey(BookingBusModel,on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()    
     
