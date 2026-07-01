@@ -12,10 +12,19 @@ class BookingBusModel(models.Model):
     def __str__(self):
         return f'{self.name} ({self.number_plate})'
     
+class Location(models.Model):
+    name = models.CharField(max_length=100)
     
+    def __str__(self):
+        return f'{self.name}'    
+    
+            
 class Trip(models.Model):
-    from_location = models.CharField(max_length=200)
-    to_location = models.CharField(max_length=200)
+    # from_location = models.CharField(max_length=200)
+    # to_location = models.CharField(max_length=200)
+    
+    from_location = models.ForeignKey(Location,on_delete=models.CASCADE,related_name='deprating_trips')
+    to_location = models.ForeignKey(Location,on_delete=models.CASCADE,related_name='arriving_trips')
     departure_time = models.DateField()
     
     bus = models.ForeignKey(BookingBusModel,on_delete=models.CASCADE)
@@ -37,4 +46,3 @@ class Booking(models.Model):
     def __str__(self):
         return f'{self.user.username} - {self.trip} - {self.seat_number}'    
     
-        

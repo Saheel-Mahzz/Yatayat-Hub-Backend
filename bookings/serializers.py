@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from bookings.models import Booking, BookingBusModel, Trip
+from bookings.models import Booking, BookingBusModel, Location, Trip
 
 
 class BusSerializer(serializers.ModelSerializer):
@@ -12,6 +12,11 @@ class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = '__all__' # Yesle booking ko parameters handle garchha
+        
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = '__all__'          
         
 class TripSerializer(serializers.ModelSerializer):
     class Meta:
