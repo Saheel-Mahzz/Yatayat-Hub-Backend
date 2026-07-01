@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-&fcpr*#t0pjrv&4g+qawo^v!9p7ydywq5t^p1pmdqcn$p%#6i#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['yatayat-hub-backend-2.onrender.com','yatayat-hub-backend-3.onrender.com','yatayat-hub-backend-4.onrender.com' 'localhost', '127.0.0.1']
+
 
 
 # Application definition
@@ -118,6 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+ALLOWED_HOSTS = ['yatayat-hub-backend-2.onrender.com','yatayat-hub-backend-3.onrender.com','yatayat-hub-backend-4.onrender.com', 'localhost', '127.0.0.1']
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
