@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django',
     'rest_framework',
     'corsheaders',
-    'bookings'
+    'bookings',
+    'authentication'
 ]
 # REST_FRAMEWORK = {
 #     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
@@ -137,3 +138,4 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 CORS_ALLOW_ALL_ORIGINS = True
+AUTH_USER_MODEL = 'authentication.CustomUser'

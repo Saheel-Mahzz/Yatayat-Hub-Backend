@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 # Create your models here.
 class BookingBusModel(models.Model):
     name = models.CharField(max_length=50)
@@ -35,7 +36,7 @@ class Trip(models.Model):
         return f'{self.route} on {self.date}'
     
 class Booking(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     trip = models.ForeignKey(Trip,on_delete=models.CASCADE)
     seat_number = models.CharField(max_length=40)
     booked_at = models.DateTimeField(auto_now_add=True)
