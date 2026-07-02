@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 class CustomUserManager(BaseUserManager):
@@ -32,6 +33,10 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS=[]
     username = None
     objects = CustomUserManager()
+    
+class ProfileModel(models.Model):
+    # user = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,primary_key=True)    
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='profile')    
     
 
     
