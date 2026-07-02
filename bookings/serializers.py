@@ -25,6 +25,8 @@ class TripSerializer(serializers.ModelSerializer):
         
 class TripReadSerializer(serializers.ModelSerializer):
     bus = BusSerializer(read_only=True)  
+    from_location = serializers.StringRelatedField(read_only=True)
+    to_location = serializers.StringRelatedField(read_only=True)
     booked_seats = serializers.SerializerMethodField()
     class Meta:
         model = Trip

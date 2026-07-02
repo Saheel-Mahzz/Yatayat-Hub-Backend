@@ -45,6 +45,7 @@ class BookingViewSets(viewsets.ModelViewSet):
 class LocationViewSets(viewsets.ModelViewSet):
     serializer_class= LocationSerializer
     queryset = Location.objects.all()    
+    pagination_class=None
 class TripViewSets(viewsets.ModelViewSet):
     # queryset = Trip.objects.all()
     serializer_class = TripSerializer
