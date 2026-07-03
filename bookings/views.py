@@ -33,6 +33,11 @@ class BusViewSets(viewsets.ModelViewSet):
     
 class BookingViewSets(viewsets.ModelViewSet):    
     serializer_class = BookingSerializer
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return BookingSerializer
+        return BookingSerializer
     def get_queryset(self):
         queryset = Booking.objects.all()
         trip_id = self.request.query_params.get('trip_id')

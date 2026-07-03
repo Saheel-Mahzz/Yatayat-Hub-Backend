@@ -37,7 +37,8 @@ class Trip(models.Model):
     
 class Booking(models.Model):
     # user = models.ForeignKey(User,on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True, blank=True)
+    # user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,)
     
     trip = models.ForeignKey(Trip,on_delete=models.CASCADE)
     seat_number = models.CharField(max_length=40)
