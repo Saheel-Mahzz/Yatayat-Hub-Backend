@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from rest_framework import views
-from rest_framework import viewsets
+from rest_framework import viewsets,status
+from rest_framework.permissions import IsAuthenticated
+
+from rest_framework.response import Response
 
 from bookings.models import Booking, BookingBusModel, Location, Trip
-from bookings.serializers import BookingSerializer, LocationSerializer, TripReadSerializer, TripSerializer, TripWriteSerializer
+from bookings.serializers import BookingSerializer, BookingWriteSerializer, LocationSerializer, TripReadSerializer, TripSerializer, TripWriteSerializer
 from bookings.seriliazers import BusSerializer
 from rest_framework.pagination import PageNumberPagination
 # Create your views here.
@@ -33,11 +36,30 @@ class BusViewSets(viewsets.ModelViewSet):
     
 class BookingViewSets(viewsets.ModelViewSet):    
     serializer_class = BookingSerializer
+    permission_classes=[IsAuthenticated]
     
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return BookingSerializer
-        return BookingSerializer
+        return BookingWriteSerializer
+    
+    def create(self, request, *args, **kwargs):
+        # Request bata aako data (user, trip, seat) lai Write Serializer maa pathaune
+        serializer = self.get_serializer_class()(data=request.data)
+        
+        # Validation check garne (kunai seat khali chaina bhane error faldinchha)
+        serializer.is_valid(raise_exception=True)
+        booking_instance = serializer.save(user=self.request.user)
+        
+        # Database maa record save garne ani tyo naya niko booking object (instance) line
+        booking_instance = serializer.save()
+        
+        # --- LOGIC GATES YAHA HO ---
+        # Aba response return garda, write serializer hoina, detailed version use garne!
+        response_serializer = BookingSerializer(booking_instance)
+        
+        # Success status (201 Created) ko sathai full detailed data return gardi ne
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
     def get_queryset(self):
         queryset = Booking.objects.all()
         trip_id = self.request.query_params.get('trip_id')
