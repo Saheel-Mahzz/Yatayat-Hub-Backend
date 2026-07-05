@@ -33,7 +33,8 @@ class Trip(models.Model):
     date = models.DateField()
     time = models.TimeField()   
     available_seats = models.IntegerField(null=True,blank=True)
-    price = models.DecimalField(max_digits=5,decimal_places=2,default=0.00)
+    # price = models.DecimalField(max_digits=7,decimal_places=5,default=0.00)
+    price = models.DecimalField(max_digits=7, decimal_places=2, default=0.00)
     
     def save(self, *args, **kwargs):
         # if not self.available_seats:
