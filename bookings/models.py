@@ -5,10 +5,11 @@ from django.conf import settings
 class BookingBusModel(models.Model):
     name = models.CharField(max_length=50)
     total_seats = models.IntegerField(default=40)
-    number_plate = models.CharField(max_length=200)
+    number_plate = models.CharField(max_length=200,unique=True)
     bus_type = models.CharField(max_length=50)
 
-    available_seats = models.IntegerField(default=40)
+    # available_seats = models.IntegerField(default=40)
+    total_seats = models.IntegerField(default=40)
     
     def __str__(self):
         return f'{self.name} ({self.number_plate})'
@@ -30,7 +31,16 @@ class Trip(models.Model):
     
     bus = models.ForeignKey(BookingBusModel,on_delete=models.CASCADE)
     date = models.DateField()
-    time = models.TimeField()    
+    time = models.TimeField()   
+    available_seats = models.IntegerField(null=True,blank=True)
+    price = models.DecimalField(max_digits=5,decimal_places=2,default=0.00)
+    
+    def save(self, *args, **kwargs):
+        # if not self.available_seats:
+        if self.available_seats is None:
+            self.available_seats = self.bus.total_seats
+        super().save(*args,**kwargs)
+         
     
     def __str__(self):
         return f'{self.route} on {self.date}'

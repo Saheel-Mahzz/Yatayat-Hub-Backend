@@ -52,9 +52,15 @@ class BookingViewSets(viewsets.ModelViewSet):
         booking_instance = serializer.save(user=self.request.user)
         
         # Database maa record save garne ani tyo naya niko booking object (instance) line
-        booking_instance = serializer.save()
+        # booking_instance = serializer.save()
         
         # --- LOGIC GATES YAHA HO ---
+        
+        current_trip = booking_instance.trip
+        print(f"BEFORE MINUS: {current_trip.available_seats}")
+        current_trip.available_seats -= 1
+        current_trip.save()
+        print(f"AFTER MINUS: {current_trip.available_seats}")
         # Aba response return garda, write serializer hoina, detailed version use garne!
         response_serializer = BookingSerializer(booking_instance)
         
