@@ -9,6 +9,8 @@ from bookings.models import Booking, BookingBusModel, Location, Trip
 from bookings.serializers import BookingSerializer, BookingWriteSerializer, LocationSerializer, TripReadSerializer, TripSerializer, TripWriteSerializer
 from bookings.seriliazers import BusSerializer
 from rest_framework.pagination import PageNumberPagination
+from .utils import generate_ticket_pdf
+from rest_framework.decorators import action
 # Create your views here.
 class BusViewSets(viewsets.ModelViewSet):
     serializer_class = BusSerializer
@@ -67,12 +69,22 @@ class BookingViewSets(viewsets.ModelViewSet):
         # Success status (201 Created) ko sathai full detailed data return gardi ne
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
     def get_queryset(self):
-        queryset = Booking.objects.all()
+        # queryset = Booking.objects.all()
+        queryset = Booking.objects.filter(user=self.request.user)
         trip_id = self.request.query_params.get('trip_id')
         if trip_id:
             queryset = queryset.filter(trip = trip_id)
         return queryset    
-    
+    @action(detail=True, methods=['get'], url_path='download')
+    def download_pdf(self, request, pk=None):
+        booking = self.get_object() # 1. Object line
+        
+        response = generate_ticket_pdf(booking) # 2. Helper lai call garne
+        
+        if response:
+            return response # 3. PDF return garne
+            
+        return Response({'error': 'PDF render error'}, status=400)
     
     
 class LocationViewSets(viewsets.ModelViewSet):
@@ -102,4 +114,5 @@ class TripViewSets(viewsets.ModelViewSet):
         if departure_time:
             queryset = queryset.filter(departure_time = departure_time)
         return queryset            
+          
             
