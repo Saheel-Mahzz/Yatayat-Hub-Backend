@@ -6,35 +6,67 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from bookings.models import Booking, BookingBusModel, Location, Trip
-from bookings.serializers import BookingSerializer, BookingWriteSerializer, LocationSerializer, TripReadSerializer, TripSerializer, TripWriteSerializer
-from bookings.seriliazers import BusSerializer
+from bookings.serializers import BookingSerializer, BookingWriteSerializer, BusDropDownSerializer, BusSerializer, LocationSerializer, TripReadSerializer, TripSerializer, TripWriteSerializer
 from rest_framework.pagination import PageNumberPagination
 from .utils import generate_ticket_pdf
 from rest_framework.decorators import action
 # Create your views here.
-class BusViewSets(viewsets.ModelViewSet):
-    serializer_class = BusSerializer
-    pagination_class = PageNumberPagination 
-    def get_queryset(self):
-        queryset= BookingBusModel.objects.all()
-        # from_location = self.request.query_params.get('from_location')
-        # to_location = self.request.query_params.get('to_location')
-        passenger = self.request.query_params.get('passenger')
-        # departure_time = self.request.query_params.get('departure_time')
+# class BusViewSets(viewsets.ModelViewSet):
+#     serializer_class = BusSerializer
+#     pagination_class = PageNumberPagination 
+#     def get_queryset(self):
+#         queryset= BookingBusModel.objects.all()
+#         # from_location = self.request.query_params.get('from_location')
+#         # to_location = self.request.query_params.get('to_location')
+#         passenger = self.request.query_params.get('passenger')
+#         # departure_time = self.request.query_params.get('departure_time')
         
-        # if from_location:
-        #     queryset = queryset.filter(from_location__icontains=from_location)
+#         # if from_location:
+#         #     queryset = queryset.filter(from_location__icontains=from_location)
             
-        # if to_location:
-        #     queryset = queryset.filter(to_location__icontains=to_location)    
+#         # if to_location:
+#         #     queryset = queryset.filter(to_location__icontains=to_location)    
             
+#         if passenger:
+#             queryset = queryset.filter(available_seats__gte=int(passenger))    
+            
+#         # if departure_time:
+#         #     queryset = queryset.filter(departure_time=departure_time)    
+#         return queryset    
+    
+class BusViewSets(viewsets.ModelViewSet):
+    queryset = BookingBusModel.objects.all()
+    pagination_class = PageNumberPagination 
+
+    def get_serializer_class(self):
+        # Yadi hit bhayeko URL 'dropdown' action ho bhane low-weight serializer dine
+        if self.action == 'dropdown':
+            return BusDropDownSerializer
+        return BusSerializer
+
+    def get_queryset(self):
+        queryset = BookingBusModel.objects.all()
+        passenger = self.request.query_params.get('passenger')
+        
         if passenger:
             queryset = queryset.filter(available_seats__gte=int(passenger))    
-            
-        # if departure_time:
-        #     queryset = queryset.filter(departure_time=departure_time)    
-        return queryset    
-    
+        return queryset
+
+    # --- YAHAN DEKHI ACTION CHALCHHA ---
+    @action(detail=False, methods=['get'], url_path='dropdown')
+    def dropdown(self, request):
+        """
+        URL target: /api/buses/dropdown/
+        Yesle pagination bypass garcha ra limited fields matra dincha.
+        """
+        # 1. Queryset line (yo mathi ko get_queryset use garcha)
+        queryset = self.filter_queryset(self.get_queryset())
+        
+        # 2. Dropdown ko lagi dynamic serializer line
+        serializer = self.get_serializer(queryset, many=True)
+        
+        # 3. Pagination completely skip garera direct array response pathaune
+        return Response(serializer.data)    
 class BookingViewSets(viewsets.ModelViewSet):    
     serializer_class = BookingSerializer
     permission_classes=[IsAuthenticated]
@@ -89,6 +121,11 @@ class BookingViewSets(viewsets.ModelViewSet):
 class LocationViewSets(viewsets.ModelViewSet):
     serializer_class= LocationSerializer
     queryset = Location.objects.all()    
+    pagination_class=None
+    
+class BusDropDownViewSets(viewsets.ModelViewSet):
+    serializer_class = BusDropDownSerializer
+    queryset = BookingBusModel.objects.all()   
     pagination_class=None
 class TripViewSets(viewsets.ModelViewSet):
     # queryset = Trip.objects.all()

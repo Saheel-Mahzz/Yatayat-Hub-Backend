@@ -91,6 +91,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
     def validate(self, attrs):
-        # Yo default response body ko lagi track ho, eslai yestai chhadda pani hunchha
         data = super().validate(attrs)
         return data
+        # Yo default response body ko lagi track ho, eslai yestai chhadda pani hunchha
+    

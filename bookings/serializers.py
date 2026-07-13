@@ -48,6 +48,11 @@ class TripSerializer(serializers.ModelSerializer):
         model = Trip
         fields = '__all__'        
         
+class BusDropDownSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookingBusModel
+        fields = ['id','name']    
+        
  
         
 class TripWriteSerializer(serializers.ModelSerializer):
