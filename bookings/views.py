@@ -14,7 +14,6 @@ from rest_framework.decorators import action
 # Create your views here.
 class BusViewSets(viewsets.ModelViewSet):
     serializer_class = BusSerializer
-    # why need to add pagination class??
     pagination_class = PageNumberPagination 
     def get_queryset(self):
         queryset= BookingBusModel.objects.all()

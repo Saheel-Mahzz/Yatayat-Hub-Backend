@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import CustomUser, ProfileModel
 from django.contrib.auth import get_user_model
 
@@ -62,3 +63,34 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProfileModel
         fields ="__all__"    
+        
+# class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+#     def validate(self, attrs):
+#         # 1. Default refresh ra access token generate garna lagaundi parent class lai
+#         data = super().validate(attrs)
+        
+#         # 2. self.user bata user ko details response payload ma thapne
+#         data['is_superuser'] = self.user.is_superuser
+#         data['email'] = self.user.email
+#         # Timlai thapna man lageko aru field pani thapna milcha, jastai:
+#         # data['phone_number'] = self.user.phone_number 
+        
+#         return data        
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        # 1. Parent bata original token line
+        token = super().get_token(user)
+
+        # 2. Token ko BHI-TRA (Payload ma) safe data thapne
+        # Yo data aaba jwtDecode garda token bhitra bhetincha!
+        token['is_superuser'] = user.is_superuser
+        token['email'] = user.email
+
+        return token
+
+    def validate(self, attrs):
+        # Yo default response body ko lagi track ho, eslai yestai chhadda pani hunchha
+        data = super().validate(attrs)
+        return data

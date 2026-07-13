@@ -1,10 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import RegisterViewSet, UserProfileView
+from .views import RegisterViewSet, UserManagementViewSet, UserProfileView
 
 router = DefaultRouter()
 # Router ma viewset register gareko:
 router.register(r'register', RegisterViewSet, basename='register')
+router.register(r'user', UserManagementViewSet, basename='user-management')
 
 urlpatterns = [
     # Yo line le 'api/register/' endpoint aafai banaudinchha
