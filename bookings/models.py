@@ -3,11 +3,22 @@ from django.contrib.auth.models import User
 from django.conf import settings
 # Create your models here.
 class BookingBusModel(models.Model):
+    class BusTypeChoices(models.TextChoices):
+        AC = 'AC', 'A/C'
+        NON_AC = 'Non_AC', 'Non-AC'
+        SLEEPER = 'DELUXE', 'Deluxe'
+        SEATER = 'SLEEPER', 'Sleeper'
+    
     name = models.CharField(max_length=50)
     total_seats = models.IntegerField(default=40)
     number_plate = models.CharField(max_length=200,unique=True)
-    bus_type = models.CharField(max_length=50)
-
+    # bus_type = models.CharField(max_length=50)
+    bus_type = models.CharField(
+        max_length=50,
+        choices=BusTypeChoices.choices,
+        default=BusTypeChoices.NON_AC
+    )
+      
     # available_seats = models.IntegerField(default=40)
     total_seats = models.IntegerField(default=40)
     
@@ -19,6 +30,8 @@ class Location(models.Model):
     
     def __str__(self):
         return f'{self.name}'    
+    
+
     
             
 class Trip(models.Model):
