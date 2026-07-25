@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import views
 from rest_framework import viewsets,status
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import OrderingFilter, SearchFilter
 
 from rest_framework.response import Response
 
@@ -128,11 +128,14 @@ class BusDropDownViewSets(viewsets.ModelViewSet):
     serializer_class = BusDropDownSerializer
     queryset = BookingBusModel.objects.all()   
     pagination_class=None
+    
 class TripViewSets(viewsets.ModelViewSet):
     # queryset = Trip.objects.all()
     serializer_class = TripSerializer
-    filter_backends = [SearchFilter]
+    filter_backends = [SearchFilter,OrderingFilter]
     search_fields = ['name']
+    
+    ordering_fields = ['price']
     
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -144,6 +147,9 @@ class TripViewSets(viewsets.ModelViewSet):
         from_destination = self.request.query_params.get('from_location')
         to_destination = self.request.query_params.get('to_location')
         departure_time = self.request.query_params.get('departure_time')
+        # price_sort = self.request.query_params.get('price_sort')
+        bus_type = self.request.query_params.get('bus_type')
+        
         
         if from_destination:
             # queryset = queryset.filter(from_location__icontains= from_destination)
@@ -152,6 +158,14 @@ class TripViewSets(viewsets.ModelViewSet):
             queryset = queryset.filter(to_location = to_destination)
         if departure_time:
             queryset = queryset.filter(departure_time = departure_time)
+        
+        if bus_type:    
+            queryset = queryset.filter(bus__bus_type = bus_type)
+            
+        # if price_sort == 'price_asc':
+        #         queryset  = queryset.order_by('price')
+        # elif price_sort == 'price_desc':
+        #     queryset  = queryset.order_by('-price')  
         return queryset            
           
             
