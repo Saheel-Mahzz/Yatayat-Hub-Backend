@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import views
 from rest_framework import viewsets,status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.filters import SearchFilter
 
 from rest_framework.response import Response
 
@@ -130,6 +131,8 @@ class BusDropDownViewSets(viewsets.ModelViewSet):
 class TripViewSets(viewsets.ModelViewSet):
     # queryset = Trip.objects.all()
     serializer_class = TripSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['name']
     
     def get_serializer_class(self):
         if self.request.method == 'GET':

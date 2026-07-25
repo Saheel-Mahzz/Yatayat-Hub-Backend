@@ -5,7 +5,7 @@ from django.conf import settings
 class BookingBusModel(models.Model):
     class BusTypeChoices(models.TextChoices):
         AC = 'AC', 'A/C'
-        NON_AC = 'Non_AC', 'Non-AC'
+        NON_AC = 'NON_AC', 'Non-AC'
         SLEEPER = 'DELUXE', 'Deluxe'
         SEATER = 'SLEEPER', 'Sleeper'
     
@@ -40,7 +40,7 @@ class Trip(models.Model):
     
     from_location = models.ForeignKey(Location,on_delete=models.CASCADE,related_name='deprating_trips')
     to_location = models.ForeignKey(Location,on_delete=models.CASCADE,related_name='arriving_trips')
-    departure_time = models.DateField()
+    # departure_time = models.DateField()
     
     bus = models.ForeignKey(BookingBusModel,on_delete=models.CASCADE)
     date = models.DateField()

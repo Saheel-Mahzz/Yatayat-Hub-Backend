@@ -59,10 +59,26 @@ class UserDetailSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'email', 'first_name', 'last_name']    
 class ProfileSerializer(serializers.ModelSerializer):
-    user = UserDetailSerializer(read_only=True)  # Nested serializer for user details
+    # user = UserDetailSerializer(read_only=True)  # Nested serializer for user details
+    first_name = serializers.CharField(source='user.first_name', required=False)
+    last_name = serializers.CharField(source='user.last_name', required=False)
+    email = serializers.CharField(source='user.email', read_only=True)
+    
+    def update(self, instance, validated_data):
+        # 1. User model realted fields extract garne
+        user_data = validated_data.pop('user', {})
+        
+        # 2. User Instance Object lai Update garne (Yadi FE bata aako vaye)
+        user = instance.user
+        for attr, value in user_data.items():
+            setattr(user, attr, value)
+        user.save()
+
+        # 3. Baki ProfileModel fields super() le automatic update garos
+        return super().update(instance, validated_data)
     class Meta:
         model = ProfileModel
-        fields ="__all__"    
+        fields = ['id', 'email', 'first_name', 'last_name']    
         
 # class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 #     def validate(self, attrs):
