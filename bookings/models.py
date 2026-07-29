@@ -65,12 +65,17 @@ class Booking(models.Model):
     # user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,)
     
     trip = models.ForeignKey(Trip,on_delete=models.CASCADE)
-    seat_number = models.CharField(max_length=40)
+    # seat_number = models.CharField(max_length=40)
     booked_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        unique_together = ('trip','seat_number')    
-        
+
     def __str__(self):
         return f'{self.user.username} - {self.trip} - {self.seat_number}'    
+    
+class BookedSeats(models.Model):
+    booking = models.ForeignKey(Booking,on_delete=models.CASCADE)
+    seat_number = models.CharField(max_length=40)    
+    
+    class Meta:
+        # unique_together = ('trip','seat_number')    
+        unique_together = ('booking','seat_number')    
     

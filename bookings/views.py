@@ -1,5 +1,7 @@
+
 from django.shortcuts import render
 from rest_framework import views
+from django.utils import timezone
 from rest_framework import viewsets,status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -143,11 +145,13 @@ class TripViewSets(viewsets.ModelViewSet):
         return TripWriteSerializer
     
     def get_queryset(self):
+        # today = timezone.now().date()
+        # queryset = Trip.objects.filter(date__gte=today)
         queryset = Trip.objects.all()
         from_destination = self.request.query_params.get('from_location')
         to_destination = self.request.query_params.get('to_location')
-        departure_time = self.request.query_params.get('departure_time')
-        # price_sort = self.request.query_params.get('price_sort')
+        date = self.request.query_params.get('date')
+        price_sort = self.request.query_params.get('price_sort')
         bus_type = self.request.query_params.get('bus_type')
         
         
@@ -156,16 +160,16 @@ class TripViewSets(viewsets.ModelViewSet):
             queryset = queryset.filter(from_location=from_destination)
         if to_destination:
             queryset = queryset.filter(to_location = to_destination)
-        if departure_time:
-            queryset = queryset.filter(departure_time = departure_time)
+        if date:
+            queryset = queryset.filter(date = date)
         
         if bus_type:    
             queryset = queryset.filter(bus__bus_type = bus_type)
             
-        # if price_sort == 'price_asc':
-        #         queryset  = queryset.order_by('price')
-        # elif price_sort == 'price_desc':
-        #     queryset  = queryset.order_by('-price')  
+        if price_sort == 'price_asc':
+                queryset  = queryset.order_by('price')
+        elif price_sort == 'price_desc':
+            queryset  = queryset.order_by('-price')  
         return queryset            
           
             
