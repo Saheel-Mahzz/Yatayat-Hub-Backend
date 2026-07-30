@@ -57,12 +57,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name']    
+        fields = ['id', 'email', 'first_name', 'last_name','phone_number']    
 class ProfileSerializer(serializers.ModelSerializer):
     # user = UserDetailSerializer(read_only=True)  # Nested serializer for user details
     first_name = serializers.CharField(source='user.first_name', required=False)
     last_name = serializers.CharField(source='user.last_name', required=False)
     email = serializers.CharField(source='user.email', read_only=True)
+    phone_number = serializers.CharField(source='user.phone_number',read_only=True)
     
     def update(self, instance, validated_data):
         # 1. User model realted fields extract garne
@@ -78,7 +79,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
     class Meta:
         model = ProfileModel
-        fields = ['id', 'email', 'first_name', 'last_name']    
+        fields = ['id', 'email', 'first_name', 'last_name','phone_number']    
         
 # class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 #     def validate(self, attrs):
