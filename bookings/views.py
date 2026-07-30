@@ -91,10 +91,12 @@ class BookingViewSets(viewsets.ModelViewSet):
         # booking_instance = serializer.save()
         
         # --- LOGIC GATES YAHA HO ---
-        
+        # booked_seats_count = booking_instance.seats.count()
+        booked_seats_count = booking_instance.bookedseats_set.count()
         current_trip = booking_instance.trip
         print(f"BEFORE MINUS: {current_trip.available_seats}")
-        current_trip.available_seats -= 1
+        # current_trip.available_seats -= 1
+        current_trip.available_seats -= booked_seats_count
         current_trip.save()
         print(f"AFTER MINUS: {current_trip.available_seats}")
         # Aba response return garda, write serializer hoina, detailed version use garne!
