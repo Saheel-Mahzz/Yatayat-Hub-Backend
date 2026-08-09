@@ -26,7 +26,7 @@ class BookingBusModel(models.Model):
         return f'{self.name} ({self.number_plate})'
     
 class Location(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100,unique=True)
     
     def __str__(self):
         return f'{self.name}'    

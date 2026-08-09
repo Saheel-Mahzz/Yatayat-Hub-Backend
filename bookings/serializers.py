@@ -29,6 +29,12 @@ class TripReadSerializer(serializers.ModelSerializer):
 class BookingSerializer(serializers.ModelSerializer):
     user = UserDetailSerializer(read_only=True)
     trip = TripReadSerializer(read_only=True)
+    seats = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='seat_number',
+        source='bookedseats_set'  # Yedi model ma related_name="booked_seats" cha bhane tyo rakhne
+    )
     
     class Meta:
         model = Booking
@@ -48,14 +54,30 @@ class BookingWriteSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         trip = attrs.get('trip')
         seat_number = attrs.get('seat_number')
-
+        
+        user = self.context['request'].user
+        
+        existing_seats_count = BookedSeats.objects.filter(
+            booking__trip=trip,
+            booking__user=user
+        ).count()
+        
+        total_requested_seats = existing_seats_count + len(seat_number)
+        
+        if total_requested_seats > 5:
+            remaining_seats = 5 - existing_seats_count
+            if remaining_seats <= 0:
+                raise serializers.ValidationError("Rukau! Tapai le already 5 seats book garnu bhaisaknu bhayo.")
+            else:
+                raise serializers.ValidationError(f"Rukau! Tapai le matra {remaining_seats} seat haru book garna saknu hunchha.")
+            
         # Check 1: User le empty list ta pathaeko chhaina?
         if not seat_number:
-            raise serializers.ValidationError("Kamti ma pani euta seat select gara!")
+            raise serializers.ValidationError("Atleast One seat must be selected for booking.")
 
         # Check 2: Max limit (e.g. Max 5 seats)
         if len(seat_number) > 5:
-            raise serializers.ValidationError("Ekaichoti ma maximum 5 wota seat matra book garna milchha.")
+            raise serializers.ValidationError("Atleast One seat must be selected for booking.")
 
         # Check 3: Database ma yo trip ko seat paile nai book chha ki nai?
         already_booked = BookedSeats.objects.filter(
@@ -75,8 +97,11 @@ class BookingWriteSerializer(serializers.ModelSerializer):
         booking = Booking.objects.create(**validated_data)
 
         # Loop lagayera dynamic Seats Entry garne
-        for seat in seat_number:
-            BookedSeats.objects.create(booking=booking, seat_number=seat)
+        
+        booked_seat_objects=[
+            BookedSeats(booking=booking, seat_number=seat) for seat in seat_number
+        ]
+        BookedSeats.objects.bulk_create(booked_seat_objects)
 
         return booking
 class LocationSerializer(serializers.ModelSerializer):
