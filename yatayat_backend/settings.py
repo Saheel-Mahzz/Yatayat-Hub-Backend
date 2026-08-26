@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django',
     # 'django_filter',
-    "django_filter",
+    "django_filters",
     'rest_framework',
     'corsheaders',
     'bookings',
