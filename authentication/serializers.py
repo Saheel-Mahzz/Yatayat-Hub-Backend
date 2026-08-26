@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import CustomUser, ProfileModel
 from django.contrib.auth import get_user_model
 
@@ -56,9 +57,58 @@ class RegisterSerializer(serializers.ModelSerializer):
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name']    
+        fields = ['id', 'email', 'first_name', 'last_name','phone_number']    
 class ProfileSerializer(serializers.ModelSerializer):
-    user = UserDetailSerializer(read_only=True)  # Nested serializer for user details
+    # user = UserDetailSerializer(read_only=True)  # Nested serializer for user details
+    first_name = serializers.CharField(source='user.first_name', required=False)
+    last_name = serializers.CharField(source='user.last_name', required=False)
+    email = serializers.CharField(source='user.email', read_only=True)
+    phone_number = serializers.CharField(source='user.phone_number',read_only=True)
+    
+    def update(self, instance, validated_data):
+        # 1. User model realted fields extract garne
+        user_data = validated_data.pop('user', {})
+        
+        # 2. User Instance Object lai Update garne (Yadi FE bata aako vaye)
+        user = instance.user
+        for attr, value in user_data.items():
+            setattr(user, attr, value)
+        user.save()
+
+        # 3. Baki ProfileModel fields super() le automatic update garos
+        return super().update(instance, validated_data)
     class Meta:
         model = ProfileModel
-        fields ="__all__"    
+        fields = ['id', 'email', 'first_name', 'last_name','phone_number']    
+        
+# class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+#     def validate(self, attrs):
+#         # 1. Default refresh ra access token generate garna lagaundi parent class lai
+#         data = super().validate(attrs)
+        
+#         # 2. self.user bata user ko details response payload ma thapne
+#         data['is_superuser'] = self.user.is_superuser
+#         data['email'] = self.user.email
+#         # Timlai thapna man lageko aru field pani thapna milcha, jastai:
+#         # data['phone_number'] = self.user.phone_number 
+        
+#         return data        
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        # 1. Parent bata original token line
+        token = super().get_token(user)
+
+        # 2. Token ko BHI-TRA (Payload ma) safe data thapne
+        # Yo data aaba jwtDecode garda token bhitra bhetincha!
+        token['is_superuser'] = user.is_superuser
+        token['email'] = user.email
+
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        return data
+        # Yo default response body ko lagi track ho, eslai yestai chhadda pani hunchha
+    

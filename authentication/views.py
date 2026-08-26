@@ -3,9 +3,11 @@ from rest_framework import generics, viewsets,mixins,status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
+from rest_framework.decorators import action
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from authentication.models import CustomUser, ProfileModel
-from authentication.serializers import ProfileSerializer, RegisterSerializer
+from authentication.serializers import CustomTokenObtainPairSerializer, ProfileSerializer, RegisterSerializer
 
 # Create your views here.
 # class RegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -46,6 +48,9 @@ class RegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 class UserProfileView(generics.RetrieveUpdateAPIView):
     serializer_class=ProfileSerializer
     permission_classes=[IsAuthenticated]
+               
+    def get_object(self):
+     return self.request.user.profile  
     
     # def get_queryset(self):
     #     return self.request.user.profile
@@ -54,7 +59,31 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     #     # User ko profile chha bhane linchha, chaina bhane dynamically table ma create garcha!
     #     profile, created = ProfileModel.objects.get_or_create(user=self.request.user)
     #     return profile
-           
-    def get_object(self):
-     return self.request.user.profile       
+     
         
+        
+class CustomTokenObtainPairView(TokenObtainPairView):
+    # Default serializer badalera hamro custom serializer assign gareko:
+    serializer_class = CustomTokenObtainPairSerializer        
+    
+class UserManagementViewSet(viewsets.ViewSet):
+    # Logged-in user le matra chalauna paune
+    permission_classes = [IsAuthenticated]
+
+    # @action decorator thapera custom route banaune
+    # detail=False bhanda url ma primary key id (like /api/user/1/change-password/) chahidaina, direct /api/user/change-password/ hunchha
+    @action(detail=False, methods=['post'], url_path='change-password')
+    def change_password(self, request):
+        user = request.user
+        current_password = request.data.get("current_password")
+        new_password = request.data.get("new_password")
+
+        # 1. Verification Checking
+        if not user.check_password(current_password):
+            return Response({"error": "Current password milena!"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 2. Update logic
+        user.set_password(new_password)
+        user.save()
+        
+        return Response({"message": "Password successfully change bhayo!"}, status=status.HTTP_200_OK)    
