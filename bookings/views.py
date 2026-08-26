@@ -13,7 +13,7 @@ from bookings.serializers import BookingSerializer, BookingWriteSerializer, BusD
 from rest_framework.pagination import PageNumberPagination
 from .utils import generate_ticket_pdf
 from rest_framework.decorators import action
-# from django_filters.rest_framework import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 # Create your views here.
 # class BusViewSets(viewsets.ModelViewSet):
 #     serializer_class = BusSerializer
