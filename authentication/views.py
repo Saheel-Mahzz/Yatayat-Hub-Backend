@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics, viewsets,mixins,status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -60,7 +60,10 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     #     profile, created = ProfileModel.objects.get_or_create(user=self.request.user)
     #     return profile
      
-        
+class AllUserProfile(viewsets.ModelViewSet):
+    queryset = ProfileModel.objects.all()
+    permission_classes=[IsAdminUser]    
+    serializer_class=ProfileSerializer    
         
 class CustomTokenObtainPairView(TokenObtainPairView):
     # Default serializer badalera hamro custom serializer assign gareko:

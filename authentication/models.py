@@ -17,6 +17,7 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser',True)
         extra_fields.setdefault('first_name','Super')
         extra_fields.setdefault('last_name','Admin')
+        extra_fields.setdefault('role',CustomUser.Role.ADMIN)
         extra_fields.setdefault('phone_number','9745328656')
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True')
@@ -29,10 +30,18 @@ class CustomUserManager(BaseUserManager):
 
 # Create your models here.
 class CustomUser(AbstractUser):
+    class Role(models.TextChoices):
+        ADMIN ='admin','ADMIN'
+        USER ='user','USER'
+        MANAGER='manager','MANAGER'
     email = models.CharField(unique=True)
     
-    phone_number = models.CharField(max_length=10, unique=True, blank=True, null=True)
-    
+    phone_number = models.CharField(max_length=10, unique=False, blank=True, null=True)
+    role = models.CharField(
+        max_length=100,
+        default=Role.USER,
+        choices=Role.choices
+    )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS=[]
     username = None

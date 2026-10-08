@@ -64,6 +64,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source='user.last_name', required=False)
     email = serializers.CharField(source='user.email', read_only=True)
     phone_number = serializers.CharField(source='user.phone_number',read_only=True)
+    # role = serializers.CharField(source='user.role',read_only=True)
+    role = serializers.CharField(source='user.role',required=False)
     
     def update(self, instance, validated_data):
         # 1. User model realted fields extract garne
@@ -79,7 +81,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
     class Meta:
         model = ProfileModel
-        fields = ['id', 'email', 'first_name', 'last_name','phone_number']    
+        fields = ['id', 'email', 'first_name', 'last_name','phone_number','role']    
         
 # class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 #     def validate(self, attrs):
